@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>МГЕ Цитадель | Официальный Хаб</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- НАВЕРХУ: Окно навигации -->
+    <header class="mge-top-navigation">
+        <div class="nav-profile">
+            <div class="nav-avatar-wrapper">
+                <img src="avatar.jpg" alt="Логотип Сайта">
+            </div>
+            <div class="nav-text">
+                <div class="title-row">
+                    <span class="muscle-emoji">💪</span>
+                    <h1>МГЕ БРАТСТВО</h1>
+                    <span class="muscle-emoji">💪</span>
+                </div>
+                <p class="nav-subtitle">Официальный информационный хаб. Здесь куют базу.</p>
+            </div>
+        </div>
+        <button id="clear-chat-btn" class="mge-btn btn-secondary btn-small" style="border-color: #00ffcc; color: #00ffcc;">Очистить чат у себя</button>
+    </header>
+
+    <div class="mge-main-layout">
+        <!-- ЛЕВАЯ ПАНЕЛЬ: ЧАТ -->
+        <aside class="left-panel chat-panel">
+            <div class="chat-header">
+                <h3>💬 Общий онлайн-чат</h3>
+                <div class="nickname-box">
+                    <input type="text" id="chat-nickname" placeholder="Создай свой никнейм..." maxlength="20">
+                    <button id="set-nickname-btn" class="mge-btn btn-small">Ок</button>
+                </div>
+            </div>
+
+            <div id="chat-messages" class="chat-messages-container">
+                <div class="chat-msg system" id="chat-system-welcome">
+                    <span class="msg-text">🤖 Система: Создай ник выше, чтобы подключиться к общей сети чата.</span>
+                </div>
+            </div>
+
+            <div class="chat-footer">
+                <input type="text" id="chat-input" placeholder="Сначала создай ник..." disabled>
+                <button id="chat-send-btn" class="mge-btn btn-chat" disabled>Отправить</button>
+            </div>
+        </aside>
+
+        <!-- ПРАВАЯ ПАНЕЛЬ: СТЕНА -->
+        <main class="right-panel">
+            <h3 class="section-title">⚡ Главная лента материалов ⚡</h3>
+            <div id="archive-feed">
+                <div class="mge-card archive-item">
+                    <p class="archive-text">Добро пожаловать на официальный сайт МГЕ Братства. Лента обновляется администрацией. Оценивайте пик формы, пацаны.</p>
+                    <div class="archive-media">
+                        <img src="https://imgur.com" alt="Медиа материалы">
+                    </div>
+                </div>
+                <div class="mge-card archive-item">
+                    <p class="archive-text">Свежий пак правильного фонка для жестких тренировок. Скачивайте файл по ссылке ниже.</p>
+                    <a href="#" class="archive-file-link">💾 Скачать пак: phonk_mass_pack.zip</a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="mge-privacy-modal" class="modal-overlay hidden">
+        <div class="mge-card modal-content">
+            <h3 style="color: #ff007f; margin-bottom: 15px;">🚨 ВАЖНАЯ ИНФОРМАЦИЯ ДЛЯ БРАТВЫ</h3>
+            <p style="font-family: Arial, sans-serif; text-transform: none; line-height: 1.5; color: #e0e0e0; margin-bottom: 20px;">
+                Этот сайт уважает твою конфиденциальность. Твой никнейм сохраняется на твоем ПК через LocalStorage, но сообщения отправляются в общую защищенную базу данных, чтобы вся братва видела твой флекс!
+            </p>
+            <button id="close-privacy-btn" class="mge-btn btn-timer" disabled>3</button>
+        </div>
+    </div>
+
+    <!-- ПОДКЛЮЧЕНИЕ СЕТЕВОГО ОБЛАКА SUPABASE -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+
+</body>
+</html>
