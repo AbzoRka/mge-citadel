@@ -1,9 +1,15 @@
-// === НАСТРОЙКА СВЯЗИ С ОБЛАКОМ ===
+// Настройка подключения к Supabase
 const SUPABASE_URL = "https://supabase.co"; 
 const SUPABASE_ANON_KEY = "sb_publishable_dQ4TmNQhbRWNjniBhfe2mg_QxRFNpoZ"; 
 
-// Инициализация подключения (mge_db устраняет конфликты имен)
-const mge_db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let mge_db = null;
+
+// Пытаемся безопасно подключить базу данных
+try {
+    mge_db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} catch (err) {
+    console.error("Ошибка загрузки Supabase библиотеки:", err);
+}
 
 const chatInput = document.getElementById('chat-input');
 const chatSendBtn = document.getElementById('chat-send-btn');
@@ -14,9 +20,19 @@ const systemWelcome = document.getElementById('chat-system-welcome');
 const clearChatBtn = document.getElementById('clear-chat-btn');
 
 let isNicknameSet = false;
-let isCooldownActive = false; // Флаг задержки отправки
+let isCooldownActive = false;
 
-// Проверка и авторизация никнейма
+// Вспомогательная функция вывода системных ошибок на экран чата
+function showScreenError(text) {
+    const errEl = document.createElement('div');
+    errEl.classList.add('chat-msg', 'system');
+    errEl.style.borderLeftColor = "#ff0000";
+    errEl.innerHTML = `<span class="msg-text" style="color: #ff0000; font-weight: bold;">❌ Ошибка: ${text}</span>`;
+    chatMessages.appendChild(errEl);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// Авторизация никнейма
 setNicknameBtn.addEventListener('click', () => {
     const nick = chatNickname.value.trim();
     if (!nick) {
@@ -32,19 +48,23 @@ setNicknameBtn.addEventListener('click', () => {
     if(systemWelcome) {
         systemWelcome.querySelector('.msg-text').textContent = `🤖 Система: Успешное подключение под ником "${nick}". Загружаем общую историю...`;
     }
+    loadChatMessages();
 });
 
-// ОТПРАВКА СООБЩЕНИЯ В ОБЛАКО (С КД 10 СЕКУНД)
+// ОТПРАВКА СООБЩЕНИЯ В ОБЛАКО
 async function sendChatMessage() {
     if (!isNicknameSet || isCooldownActive) return;
+    if (!mge_db) {
+        showScreenError("База данных не инициализирована.");
+        return;
+    }
     
     const text = chatInput.value.trim();
     const nick = localStorage.getItem("mge_nickname") || "Анонимный Титан";
     if (!text) return;
 
-    chatInput.value = ""; // Вычищаем поле
+    chatInput.value = ""; // Очищаем поле
     
-    // Включаем задержку
     isCooldownActive = true;
     chatInput.disabled = true;
     chatSendBtn.disabled = true;
@@ -66,15 +86,14 @@ async function sendChatMessage() {
         }
     }, 1000);
 
-    // Пушим данные в интернет-базу данных через mge_db
     const { error } = await mge_db
         .from('mge_chat')
         .insert([{ author: nick, text: text }]);
 
     if (error) {
-        console.error("Ошибка отправки базы в облако:", error);
+        showScreenError(`Не удалось отправить: ${error.message}`);
     } else {
-        loadChatMessages(); // Обновляем чат у себя на экране
+        loadChatMessages(); 
     }
 }
 
@@ -93,8 +112,10 @@ function appendMessageToHTML(msg) {
     chatMessages.appendChild(msgElement);
 }
 
-// ЗАГРУЗКА ИЗ ОБЛАКА ДЛЯ ВСЕХ ПОЛЬЗОВАТЕЛЕЙ
+// ЗАГРУЗКА ИЗ ОБЛАКА
 async function loadChatMessages() {
+    if (!mge_db) return;
+
     const { data, error } = await mge_db
         .from('mge_chat')
         .select('author, text')
@@ -102,7 +123,7 @@ async function loadChatMessages() {
         .limit(50);
 
     if (error) {
-        console.error("Не удалось скачать переписку:", error);
+        showScreenError(`Ошибка загрузки истории: ${error.message}`);
         return;
     }
 
@@ -111,10 +132,9 @@ async function loadChatMessages() {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-// Кнопка очистки истории у себя на экране
 if (clearChatBtn) {
     clearChatBtn.addEventListener('click', () => {
-        if (confirm("Брат, очистить экран чата на твоем ПК? (Сами сообщения в облаке останутся)")) {
+        if (confirm("Брат, очистить экран чата на твоем ПК?")) {
             chatMessages.innerHTML = '';
             const tempAlert = document.createElement('div');
             tempAlert.classList.add('chat-msg', 'system');
@@ -147,7 +167,6 @@ document.addEventListener("DOMContentLoaded", () => {
     loadChatMessages();
     setInterval(loadChatMessages, 3000);
 
-    // ДИСКЛЕЙМЕР ПРИ СТАРТЕ
     const privacyModal = document.getElementById('mge-privacy-modal');
     const closePrivacyBtn = document.getElementById('close-privacy-btn');
     const isNoticeAccepted = localStorage.getItem("mge_privacy_accepted");

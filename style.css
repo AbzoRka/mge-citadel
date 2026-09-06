@@ -14,15 +14,14 @@ body {
     width: 100vw;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Весь экран заблокирован, скролл только внутри панелей */
+    overflow: hidden;
 }
 
-/* Свойство для плавных переходов кнопок (расширения) */
 .mge-btn {
     transition: all 0.3s ease-in-out !important;
 }
 
-/* ================= ВЕРХНЯЯ НАВИГАЦИЯ (ЛИЦО САЙТА) ================= */
+/* ================= ВЕРХНЯЯ НАВИГАЦИЯ ================= */
 .mge-top-navigation {
     background: rgba(0, 0, 0, 0.75);
     border-bottom: 3px solid #ff007f;
@@ -145,6 +144,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    max-height: calc(100vh - 250px);
 }
 
 .chat-msg {
@@ -181,7 +181,8 @@ body {
     border-top: 2px solid rgba(255, 0, 127, 0.1);
     display: flex;
     gap: 10px;
-    background: rgba(0,0,0,0.3);
+    background: rgba(0,0,0,0.5);
+    margin-top: auto;
 }
 
 .chat-footer input {
@@ -204,7 +205,7 @@ body {
 
 .btn-chat { width: auto; padding: 0 15px; font-size: 0.95rem; border-radius: 20px; }
 
-/* ================= ПРАВАЯ ПАНЕЛЬ: ШИРОКАЯ СТЕНА ================= */
+/* ================= ПРАВАЯ ПАНЕЛЬ ================= */
 .right-panel {
     padding: 25px;
     overflow-y: auto;
@@ -278,7 +279,7 @@ body {
     transform: none !important;
 }
 
-/* ================= ОКНО ПРЕДУПРЕЖДЕНИЯ И ТАЙМЕРА ================= */
+/* ================= МОДАЛКА ================= */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -306,7 +307,6 @@ body {
     to { transform: scale(1); opacity: 1; }
 }
 
-/* Кнопка компактного таймера, пока она заблокирована: маленькая и тёмная */
 .mge-btn.btn-timer:disabled {
     background: #11001c !important;
     border: 2px solid #ff007f !important;
