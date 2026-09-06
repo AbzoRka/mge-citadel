@@ -44,7 +44,7 @@ async function sendChatMessage() {
 
     chatInput.value = ""; // Вычищаем поле
     
-    // Включаем жесткую МГЕ-задержку
+    // Включаем задержку
     isCooldownActive = true;
     chatInput.disabled = true;
     chatSendBtn.disabled = true;
@@ -52,7 +52,6 @@ async function sendChatMessage() {
     let cooldownTime = 10;
     chatSendBtn.textContent = `${cooldownTime}с`;
 
-    // Запускаем таймер на кнопке отсчета КД
     const cooldownInterval = setInterval(() => {
         cooldownTime--;
         if (cooldownTime > 0) {
@@ -67,7 +66,7 @@ async function sendChatMessage() {
         }
     }, 1000);
 
-    // Пушим данные в интернет-базу данных через исправленный mge_db
+    // Пушим данные в интернет-базу данных через mge_db
     const { error } = await mge_db
         .from('mge_chat')
         .insert([{ author: nick, text: text }]);
@@ -96,7 +95,6 @@ function appendMessageToHTML(msg) {
 
 // ЗАГРУЗКА ИЗ ОБЛАКА ДЛЯ ВСЕХ ПОЛЬЗОВАТЕЛЕЙ
 async function loadChatMessages() {
-    // Скачиваем последние 50 сообщений из интернета через исправленный mge_db
     const { data, error } = await mge_db
         .from('mge_chat')
         .select('author, text')
@@ -108,7 +106,6 @@ async function loadChatMessages() {
         return;
     }
 
-    // Вычищаем старый экран и перерисовываем актуальную базу для всех
     chatMessages.innerHTML = '';
     data.forEach(msg => appendMessageToHTML(msg));
     chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -147,7 +144,6 @@ document.addEventListener("DOMContentLoaded", () => {
         isNicknameSet = true;
     }
     
-    // Каждые 3 секунды сайт лезет в облако и проверяет новые сообщения
     loadChatMessages();
     setInterval(loadChatMessages, 3000);
 
