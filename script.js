@@ -1,14 +1,18 @@
-// Настройка подключения к Supabase
+// === НАСТРОЙКА СВЯЗИ С ОБЛАКОМ ===
 const SUPABASE_URL = "https://supabase.co"; 
 const SUPABASE_ANON_KEY = "sb_publishable_dQ4TmNQhbRWNjniBhfe2mg_QxRFNpoZ"; 
 
 let mge_db = null;
 
-// Пытаемся безопасно подключить базу данных
+// Жесткая и правильная инициализация через window.supabase
 try {
-    mge_db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    if (window.supabase) {
+        mge_db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    } else {
+        console.error("Библиотека Supabase не найдена в системе.");
+    }
 } catch (err) {
-    console.error("Ошибка загрузки Supabase библиотеки:", err);
+    console.error("Ошибка инициализации базы данных:", err);
 }
 
 const chatInput = document.getElementById('chat-input');
@@ -22,7 +26,7 @@ const clearChatBtn = document.getElementById('clear-chat-btn');
 let isNicknameSet = false;
 let isCooldownActive = false;
 
-// Вспомогательная функция вывода системных ошибок на экран чата
+// Функция вывода системных ошибок на экран чата
 function showScreenError(text) {
     const errEl = document.createElement('div');
     errEl.classList.add('chat-msg', 'system');
